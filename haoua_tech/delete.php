@@ -1,47 +1,29 @@
-<?php
-include 'functions.php';
-$pdo = pdo_connect_mysql();
-$msg = '';
-
-if (isset($_GET['id'])) {
-    
-    $stmt = $pdo->prepare('SELECT * FROM Liste_serveur WHERE id = ?');
-    $stmt->execute([$_GET['id']]);
-    $contact = $stmt->fetch(PDO::FETCH_ASSOC);
-    if (!$contact) {
-        exit('le prietaire n\'existe pas avec cet ID!');
-    }
-
-    if (isset($_GET['confirm'])) {
-        if ($_GET['confirm'] == 'yes') {
+<!DOCTYPE html>
+<html>
+    <head>
+      
+        <meta charset='utf-8'>
+    </head>
+    <body>
           
-            $stmt = $pdo->prepare('DELETE FROM contacts WHERE id = ?');
-            $stmt->execute([$_GET['id']]);
-            $msg = 'You have deleted the contact!';
-        } else {
-     
-            header('Location: read.php');
-            exit;
-        }
-    }
-} else {
-    exit('No ID specified!');
-}
-?>
-
-<?=template_header('Delete')?>
-
-<div class="content delete">
-	<h2>Supprimer Serveur #<?=$proprietaire['id']?></h2>
-    <?php if ($msg): ?>
-    <p><?=$msg?></p>
-    <?php else: ?>
-	<p>Etes vous de supprumer ce serveur? #<?=$contact['id']?>?</p>
-    <div class="yesno">
-        <a href="delete.php?id=<?=$proprietaire['id']?>&confirm=yes">OUI</a>
-        <a href="delete.php?id=<?=$proprietaire['id']?>&confirm=no">NON</a>
-    </div>
-    <?php endif; ?>
-</div>
-
-<?=template_footer()?>
+        <?php
+            $servname = "localhost"; $dbname = "haoua_tech"; $user = "root"; $pass = "";
+            
+            try{
+                $dbco = new PDO("mysql:host=$servname;dbname=$dbname", $user, $pass);
+                $dbco->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                
+                $sql = "DELETE FROM serveur WHERE proprietaire='escae'";
+                $sth = $dbco->prepare($sql);
+                $sth->execute();
+                
+                $count = $sth->rowCount();
+                print('Données supprimé.');
+            }
+                  
+            catch(PDOException $e){
+                echo "Erreur : " . $e->getMessage();
+            }
+        ?>
+    </body>
+</html>
